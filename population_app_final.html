@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Metro Manila Population (2010)</title>
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+<style type="text/css">
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#map {
+  height: 100%;
+  font-family: Arial, Helvetica, Verdana;
+}
+
+.info {
+  padding: 6px 8px;
+  font-size: 14px;
+  line-height: 16px;
+  background: white;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  border-radius: 5px;
+}
+
+.info h4 {
+  font-size: 16px;
+  margin: 0 0 5px;
+  color: #777;
+}
+
+.legend {
+  font-size: 12px;
+  line-height: 18px;
+  color: #555;
+}
+
+.legend i {
+  width: 18px;
+  height: 18px;
+  float: left;
+  margin-right: 8px;
+  opacity: 0.7;
+}
+
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script src="data/metro_manila.js"></script>
+<script>
+
+var map = L.map('map').setView([14.57, 121.03], 11);
+L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+    maxZoom: 19
+}).addTo(map);
+
+function style(feature) {
+    return {
+        fillColor: getColorFromPopulation(feature.properties.population),
+        weight: 2,
+        opacity: 0.7,
+        color: 'white',
+        fillOpacity: 0.7
+    };
+}
+
+var grades = [0,100000,165000,270000,445000,735000,1215000,2000000];
+function getColorFromPopulation(p) {
+    return p > grades[7] ? '#800026' :
+           p > grades[6] ? '#BD0026' :
+           p > grades[5] ? '#E31A1C' :
+           p > grades[4] ? '#FC4E2A' :
+           p > grades[3] ? '#FD8D3C' :
+           p > grades[2] ? '#FEB24C' :
+           p > grades[1] ? '#FED976' :
+                           '#FFEDA0';
+}
+
+function highlightFeature(e) {
+    var layer = e.target;
+    layer.setStyle({
+        weight: 3,
+        color: '#FF8',
+        opacity: 1,
+        dashArray: '',
+        fillOpacity: 1
+    });
+    layer.bringToFront();
+    info.update(layer.feature.properties);
+}
+
+function resetHighlight(e) {
+    geojson.resetStyle(e.target);
+    info.update();
+}
+
+function zoomToFeature(e) {
+    map.fitBounds(e.target.getBounds());
+}
+
+function onEachFeature(feature, layer) {
+    layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: zoomToFeature
+    })
+}
+
+var info = L.control();
+info.onAdd = function (map) {
+    this._div = L.DomUtil.create('div', 'info');
+    this.update();
+    return this._div;
+};
+info.update = function (props) {
+    this._div.innerHTML = '<h4>Metro Manila Population (2010)</h4>' +
+    (
+        props
+        ? '<b>' + props.name + '</b> – ' + props.population
+        : '<i>Hover over a city or municipality</i>'
+    );
+};
+info.addTo(map);
+
+var legend = L.control({position: 'bottomright'});
+legend.onAdd = function (map) {
+    var div = L.DomUtil.create('div', 'info legend'),
+        labels = [];
+    for (var i = 0; i < grades.length; i++) {
+        div.innerHTML +=
+            '<div><i style="background:' + getColorFromPopulation(grades[i] + 1) + '"></i> ' +
+            grades[i] + (grades[i + 1] ? '–' + grades[i + 1] : '+') + '</div>';
+    }
+    return div;
+};
+legend.addTo(map);
+
+var geojson = L.geoJson(metroManilaData, {
+    style: style,
+    onEachFeature: onEachFeature
+}).addTo(map);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Population | Leaflet x Turf</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css">
+<style type="text/css">
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+body {
+  padding-top: 50px;
+  padding-bottom: 20px;
+}
+
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Leaflet x Turf</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="locator.html">Locator</a></li>
+        <li class="active"><a href="#">Population</a></li>
+        <li><a href="branches.html">Branches</a></li>
+        <li><a href="router.html">Router</a></li>
+      </ul>
+    </div><!--/.navbar-collapse -->
+  </div>
+</nav>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>Population</h1>
+    <p><strong>An interactive choropleth map for the population of Metro Manila LGUs.</strong><br>
+      This training module introduces Leaflet's GeoJSON features, custom event handling,
+      as well as creating custom control overlays.</p>
+    <p><a class="btn btn-primary" href="population_app_final.html" role="button">See final product »</a></p>
+  </div>
+</div>
+<div class="container">
+
+  <h2>Template</h2>
+  <p>Let’s start with our base HTML5 template with Leaflet already linked
+    and our map <code>div</code> element already included and styled:</p>
+  <pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Population&lt;/title&gt;
+    &lt;link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" /&gt;
+    &lt;script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"&gt;&lt;/script&gt;
+    &lt;style type="text/css"&gt;
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#map {
+  height: 100%;
+  font-family: Arial, Helvetica, Verdana;
+}
+
+    &lt;/style&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id="map"&gt;&lt;/div&gt;
+    &lt;script&gt;
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+  <h2>GeoJSON data format</h2>
+  <p>Our data consists of a GeoJSON file (<a href="data/metro_manila.js">metro_manila.js</a>)
+    containing the boundary data of each LGU with properties for the name and population of the LGU.
+    Each LGU looks like this:</p>
+  <pre><code>{
+    "type": "Feature",
+    "properties": {
+        "name": "Manila",
+        "population": 1652171,
+        ...
+},
+    "geometry": ...
+    ...
+}</code></pre>
+  <p>The boundary data was obtained from OpenStreetMap and is licensed under the
+  <a href="http://opendatacommons.org/licenses/odbl/">Open Database License</a>.</p>
+  
+  <h2>Basic GeoJSON map</h2>
+  <p>It’s quite easy to use GeoJSON data in Leaflet. Once a map has been initialized,
+    and a JavaScript variable contains the GeoJSON data, just use the <code>L.geoJson()</code> method
+    to load the data into the map. Leaflet is able to interpret the various GeoJSON geometry types
+    and creates sensible default overlays for them.</p>
+  <pre><code class="js">var map = L.map('map').setView([14.57, 121.03], 11);
+
+L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&amp;copy; &lt;a href="http://www.openstreetmap.org/copyright"&gt;OpenStreetMap contributors&lt;/a&gt;',
+    maxZoom: 19
+}).addTo(map);
+
+L.geoJson(metroManilaData).addTo(map);</code></pre>
+
+  <h2>Adding some color</h2>
+  <p>Now we need to color the LGUs according to their population. Choosing nice colors for a map
+    can be tricky, but there’s a great tool that can help with it—<a href="http://colorbrewer2.org/">ColorBrewer</a>.
+    Using the values we got from it, we create a function that returns a color based on population:</p>
+  <pre><code class="js">// Logarithmic scale of population
+var grades = [0,100000,165000,270000,445000,735000,1215000,2000000];
+
+function getColorFromPopulation(p) {
+    return p &gt; grades[7] ? '#800026' :
+           p &gt; grades[6] ? '#BD0026' :
+           p &gt; grades[5] ? '#E31A1C' :
+           p &gt; grades[4] ? '#FC4E2A' :
+           p &gt; grades[3] ? '#FD8D3C' :
+           p &gt; grades[2] ? '#FEB24C' :
+           p &gt; grades[1] ? '#FED976' :
+                           '#FFEDA0';
+}</code></pre>
+  <p>Next we define a styling function for our GeoJSON layer so that its <code>fillColor</code>
+    depends on <code>feature.properties.population</code> property, also adjusting the appearance a bit.</p>
+  <pre><code class="js">function style(feature) {
+    return {
+        fillColor: getColorFromPopulation(feature.properties.population),
+        weight: 2,
+        opacity: 0.7,
+        color: 'white',
+        fillOpacity: 0.7
+    };
+}</code></pre>
+
+  <h2>Adding interaction</h2>
+  <p>Now let’s make the states highlighted visually in some way when they are hovered with a mouse.
+    First we’ll define an event listener for layer <code>mouseover</code> event:</p>
+  <pre><code class="js">function highlightFeature(e) {
+    var layer = e.target;
+    layer.setStyle({
+        weight: 3,
+        color: '#FF8',
+        opacity: 1,
+        dashArray: '',
+        fillOpacity: 1
+    });
+    layer.bringToFront();
+}</code></pre>
+  <p>Here we get access to the layer that was hovered through <code>e.target</code>,
+    set a yellow border on the layer as our highlight effect,
+    also bringing it to the front so that the border doesn’t clash with neighboring LGUs.</p>
+  <p>Next we’ll define what happens on <code>mouseout</code>:</p>
+  <pre><code class="js">function resetHighlight(e) {
+    geojson.resetStyle(e.target);
+}</code></pre>
+  <p>The handy <code>geojson.resetStyle</code> method will reset the layer style to its default state
+    (defined by our <code>style</code> function). For this to work, make sure our GeoJSON layer
+    is accessible through the <code>geojson</code> variable by defining it before our listeners
+    and assigning the layer to it later:</p>
+  <pre><code class="js">var geojson;
+// ... our listeners
+geojson = L.geoJson(...);</code></pre>
+  <p>As an additional touch, let’s define a <code>click</code> listener that zooms to the state:</p>
+  <pre><code class="js">function zoomToFeature(e) {
+    map.fitBounds(e.target.getBounds());
+}</code></pre>
+  <p>Now we’ll use the <code>onEachFeature</code> option to add the listeners on our state layers:</p>
+  <pre><code class="js">function onEachFeature(feature, layer) {
+    layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: zoomToFeature
+    })
+}
+
+// NOTE: The following code is modified from the existing!!!
+var geojson = L.geoJson(metroManilaData, {
+    style: style,
+    onEachFeature: onEachFeature
+}).addTo(map);</code></pre>
+  <p>This makes the states highlight nicely on hover and gives us the ability
+    to add other interactions inside our listeners.</p>
+
+  <h2>Custom info control</h2>
+  <p>We could use the usual popups on click to show information about different states,
+    but we’ll choose a different route—showing it on state hover inside a
+    <a href="http://leafletjs.com/reference.html#icontrol">custom control</a>.</p>
+  <p>Here’s the code for our control:</p>
+  <pre><code class="js">var info = L.control();
+
+info.onAdd = function (map) {
+    this._div = L.DomUtil.create('div', 'info');
+    this.update();
+    return this._div;
+};
+
+info.update = function (props) {
+    this._div.innerHTML = '&lt;h4&gt;Metro Manila Population (2010)&lt;/h4&gt;' +
+    (
+        props
+        ? '&lt;b&gt;' + props.name + '&lt;/b&gt; – ' + props.population
+        : '&lt;i&gt;Hover over a city or municipality&lt;/i&gt;'
+    );
+};
+
+info.addTo(map);</code></pre>
+  <p>We need to update the control when the user hovers over a state, so we’ll also modify our listeners as follows:</p>
+  <pre><code class="js">function highlightFeature(e) {
+    ...
+    info.update(layer.feature.properties);
+}
+
+function resetHighlight(e) {
+    ...
+    info.update();
+}</code></pre>
+  <p>The control also needs some CSS styles to look nice:</p>
+  <pre><code class="css">.info {
+  padding: 6px 8px;
+  font-size: 14px;
+  line-height: 16px;
+  background: white;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  border-radius: 5px;
+}
+
+.info h4 {
+  font-size: 16px;
+  margin: 0 0 5px;
+  color: #777;
+}</code></pre>
+
+  <h2>Custom legend control</h2>
+  <p>Creating a control with a legend is easier, since it is static and doesn’t change on state hover.</p>
+  <pre><code class="js">var legend = L.control({position: 'bottomright'});
+
+legend.onAdd = function (map) {
+    var div = L.DomUtil.create('div', 'info legend'),
+        labels = [];
+    for (var i = 0; i < grades.length; i++) {
+        div.innerHTML +=
+            '&lt;div&gt;&lt;i style="background:' + getColorFromPopulation(grades[i] + 1) + '"&gt;&lt;/i&gt; ' +
+            grades[i] + (grades[i + 1] ? '–' + grades[i + 1] : '+') + '&lt;/div&gt;';
+    }
+    return div;
+};
+
+legend.addTo(map);</code></pre>
+  <p>CSS styles for the control (we also reuse the <code>info</code> class defined earlier):</p>
+  <pre><code class="css">.legend {
+  font-size: 12px;
+  line-height: 18px;
+  color: #555;
+}
+
+.legend i {
+  width: 18px;
+  height: 18px;
+  float: left;
+  margin-right: 8px;
+  opacity: 0.7;
+}</code></pre>
+  <p>And that’s it!</p>
+
+  <hr>
+  <footer>
+    <p>&copy; 2016, Eugene Alvin Villar</p>
+  </footer>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>

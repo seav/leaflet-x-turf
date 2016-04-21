@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>UP Department of Geodetic Engineering » Locator Map</title>
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+<style type="text/css">
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#map {
+  height: 100%;
+  font-family: Arial, Helvetica, Verdana;
+}
+
+.leaflet-popup-content strong {
+  font-size: 12px;
+  color: #C00;
+  text-transform: uppercase;
+}
+
+.leaflet-popup-content h1 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  line-height: 15px;
+}
+
+.leaflet-popup-content dl {
+  margin: 0;
+}
+
+.leaflet-popup-content dt {
+  margin: 5px 0 0 0;
+  font-size: 9px;
+  width: 80px;
+  float: left;
+  clear: left;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.leaflet-popup-content dd {
+  margin: 5px 0 0 0;
+  padding-left: 90px;
+}
+
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+
+var map = L.map('map');
+
+var baseMap1 = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+    maxZoom: 19
+}).addTo(map);
+
+var baseMap2 = L.tileLayer('http://tile-{s}.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+    maxZoom: 19
+});
+
+var marker = L.marker([14.65651,121.07011]);
+marker.bindPopup(
+    '<strong>University of the Philippines Diliman</strong>' +
+    '<h1>Department of Geodetic Engineering</h1>' +
+    '<dl><dt>Address</dt><dd>218 Vila Wing, Melchor Hall,<br>' +
+    'College of Engineering<br>' +
+    'University of the Philippines<br>' +
+    'Osmeña Avenue, Diliman, Quezon City 1101</dd>' +
+    '<dt>Telephone</dt><dd>+63-2-9818500 local 3124 / +63-3-920-8924</dd>' +
+    '<dt>Fax</dt><dd>+63-2-920-8924</dd>' +
+    '<dt>E-mail</dt><dd>acblanco.updge@gmail.com</dd>'
+);
+
+var polygon = L.polygon([
+    [14.65659,121.06886],[14.65671,121.06885],[14.65671,121.06872],
+    [14.65658,121.06872],[14.65658,121.06871],[14.65655,121.06871],
+    [14.65655,121.06865],[14.65647,121.06865],[14.65647,121.06878],
+    [14.65649,121.06955],[14.65635,121.06956],[14.65635,121.06975],
+    [14.65635,121.06991],[14.65644,121.06991],[14.65645,121.07031],
+    [14.65659,121.07031],[14.65658,121.06975],[14.65680,121.06974],
+    [14.65680,121.06974],[14.65688,121.06974],[14.65688,121.06955],
+    [14.65683,121.06955],[14.65682,121.06939],[14.65670,121.06939],
+    [14.65671,121.06955],[14.65663,121.06955],[14.65661,121.06955],
+    [14.65661,121.06953],
+]);
+map.fitBounds(polygon);
+
+var locators = L.layerGroup([marker, polygon]).addTo(map);
+
+var baseMaps = {
+    'Standard OSM': baseMap1,
+    'Humanitarian': baseMap2
+};
+
+var overlayMaps = {
+    'Locator': locators
+};
+
+L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+</script>
+</body>
+</html>

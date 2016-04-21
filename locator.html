@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Locator | Leaflet x Turf</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css">
+<style type="text/css">
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+body {
+  padding-top: 50px;
+  padding-bottom: 20px;
+}
+
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Leaflet x Turf</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li class="active"><a href="#">Locator</a></li>
+        <li><a href="population.html">Population</a></li>
+        <li><a href="branches.html">Branches</a></li>
+        <li><a href="router.html">Router</a></li>
+      </ul>
+    </div><!--/.navbar-collapse -->
+  </div>
+</nav>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>Locator</h1>
+    <p><strong>A locator map for the UP Department of Geodetic Engineering.</strong><br>
+      This training module teaches the basics of Leaflet, and introduces adding markers,
+      polygons, and popups, as well as multiple tile layers and layer controls.</p>
+    <p><a class="btn btn-primary" href="locator_app_final.html" role="button">See final product »</a></p>
+  </div>
+</div>
+<div class="container">
+
+  <h2>Template and preparation</h2>
+  <p>Let’s start with our base HTML5 template:</p>
+  <pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Locator&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+  <p>Before writing any code for the map, you need to do the following preparation steps on your page:</p>
+  <ul>
+    <li>
+      <p>Include Leaflet CSS file in the head section of your document:</p>
+      <pre><code class="html">&lt;link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" /&gt;</code></pre>
+    </li>
+    <li>
+      <p>Include Leaflet JavaScript file:</p>
+      <pre><code class="html">&lt;script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"&gt;&lt;/script&gt;</code></pre>
+    </li>
+    <li>
+      <p>Put a <code>div</code> element with a certain <code>id</code> where you want your map to be:</p>
+      <pre><code class="html">&lt;div id="map"&gt;&lt;/div&gt;</code></pre>
+    </li>
+    <li>
+      <p>Style that <code>div</code> element using CSS as desired:</p>
+      <pre><code class="html">&lt;style type="text/css"&gt;
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#map {
+  height: 100%;
+}
+
+&lt;/style&gt;
+</code></pre>
+    </li>
+  </ul>
+  <p>Now you’re ready to initialize the map and do some stuff with it.</p>
+
+  <h2>Initializing the map</h2>
+  <p>First we’ll initialize the map and set its view to our chosen geographical coordinates and a zoom level.
+    We stick the following JavaScript code into a <code>script</code> element at the end of our HTML <code>body</code>.
+    The <code>'map'</code> string refers to the ID of the <code>div</code> element where we want our map.</p>
+  <pre><code class="js">var map = L.map('map').setView([14.65651,121.07011], 17);</code></pre>
+  <p>By default (as we didn’t pass any options when creating the map instance),
+    all mouse and touch interactions on the map are enabled, and it has zoom and attribution controls.</p>
+  <p>Note that <code>setView()</code> method call also returns the map object—most Leaflet methods act like this
+    when they don’t return an explicit value, which allows convenient jQuery-like method chaining.</p>
+  <p>Next we’ll add a tile layer to add to our map, in this case it’s the Standard OpenStreetMap tile layer.
+    Creating a tile layer usually involves setting the URL template for the tile images,
+    the attribution text and the maximum zoom level of the layer.</p>
+  <pre><code class="js">L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&amp;copy; &lt;a href="http://www.openstreetmap.org/copyright"&gt;OpenStreetMap contributors&lt;/a&gt;',
+    maxZoom: 19
+}).addTo(map);</code></pre>
+  <p>Make sure all the code is called after the <code>div</code> and <code>leaflet.js</code> inclusion.
+    That’s it! You have a working Leaflet map now!</p>
+
+  <h2>Adding a marker with a popup</h2>
+  <p>Now we want to put a marker to mark the location of GE Department’s office.
+    It’s as easy as the following code:</p>
+  <pre><code class="js">L.marker([14.65651,121.07011]).addTo(map);</code></pre>
+  <p>This creates a marker on the specified coordinates, and then immediately adds it to the map.
+    The <code>map</code> variable here refers to the variable we created earlier that references the map object.</p>
+  <p>Next, let’s add a popup that appears when the user clicks on the marker.
+    In order to do this clearly, we will create a variable that will store our marker object.
+    Then we call the <code>bindPopup()</code> method of the marker to register the contents of the popup.</p>
+  <pre><code class="js">var marker = L.marker([14.65651,121.07011]).addTo(map);
+marker.bindPopup('UP Department of Geodetic Engineering');</code></pre>
+  <p>Note that the string that you pass to <code>bindPopup()</code> can be in HTML code.
+    This let’s you customize and style the contents of the popup as you wish.</p>
+
+  <h2>Adding a polygon</h2>
+  <p>Adding a polygon is almost as easy as adding a marker.
+    But you use an array of coordinates instead and a different Leaflet method.
+    Here, we’ll add the outline of Melchor Hall.</p>
+  <pre><code class="js">var polygon = L.polygon([
+    [14.65659,121.06886],[14.65671,121.06885],[14.65671,121.06872],
+    [14.65658,121.06872],[14.65658,121.06871],[14.65655,121.06871],
+    [14.65655,121.06865],[14.65647,121.06865],[14.65647,121.06878],
+    [14.65649,121.06955],[14.65635,121.06956],[14.65635,121.06975],
+    [14.65635,121.06991],[14.65644,121.06991],[14.65645,121.07031],
+    [14.65659,121.07031],[14.65658,121.06975],[14.65680,121.06974],
+    [14.65680,121.06974],[14.65688,121.06974],[14.65688,121.06955],
+    [14.65683,121.06955],[14.65682,121.06939],[14.65670,121.06939],
+    [14.65671,121.06955],[14.65663,121.06955],[14.65661,121.06955],
+    [14.65661,121.06953],
+]).addTo(map);</code></pre>
+  <p>An alternate way to set the map view is to call the <code>fitBounds()</code> method
+    of the map object and passing it the polygon object.
+    The map view will be set such that the polygon fills as much of the viewport as possible.
+    In this case, there is no need for the <code>setView()</code> call earlier.</p>
+  <pre><code class="js">var map = L.map('map'); // No more setView()!!!
+
+...
+
+var polygon = L.polygon(...);
+map.fitBounds(polygon);
+</code></pre>
+
+  <h2>Adding a layer control</h2>
+  <p>Leaflet also has a built-in feature to group several layers into one,
+    and provides a layers control element to allow users to easily switch different layers on your map.</p>
+  <p>Let’s add another base tile layer, this time the Humanitarian tileset:</p>
+  <pre><code class="js">var baseMap2 = L.tileLayer('http://tile-{s}.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+    attribution: '&amp;copy; &lt;a href="http://www.openstreetmap.org/copyright"&gt;OpenStreetMap contributors&lt;/a&gt;',
+    maxZoom: 19
+});</code></pre>
+  <p>Notice that we created a variable to store the tile layer. Let’s do that too to our Standard layer.</p>
+  <pre><code class="js">var baseMap1 = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&amp;copy; &lt;a href="http://www.openstreetmap.org/copyright"&gt;OpenStreetMap contributors&lt;/a&gt;',
+    maxZoom: 19
+}).addTo(map);</code></pre>
+  <p>Notice that one layer has <code>addTo()</code> while the other one doesn’t.
+    This allows us to control which tile layer is the default.</p>
+  <p>Next, let’s group the marker and polygon that we created into one layer group.
+    This allows us to show and remove these as one set.
+    We also remove the <code>addTo()</code> calls from the marker and polygon and put it on the group object.</p>
+  <pre><code class="js">var locators = L.layerGroup([marker, polygon]).addTo(map);</code></pre>
+  <p>Finally, let us set up our layer control.
+    But first, there are two types of layers—base layers that are mutually exclusive
+    (only one can be visible on your map), e.g. tile layers,
+    and overlays—all the other stuff you put over the base layers.
+    In this example, we want to switch between our two layers (Standard and Humanitarian),
+    and to be able to toggle on and off the visibility of the marker and polygon.</p>
+  <p>To set up the layer control, we need to create two optional JavaScript basic objects.
+    The first object refers to our base layers, and the second to our overlays.
+    The keys of both object will be the labels, while the values of the objects will be the layer objects.</p>
+  <pre><code class="js">var baseMaps = {
+    'Standard OSM': baseMap1,
+    'Humanitarian': baseMap2
+};
+
+var overlayMaps = {
+    'Locator': locators
+};</code></pre>
+  <p>Finally, we add our layer control, passing it our two new objects.
+    Both arguments are optional—for example, you can pass just a base layers object by omitting the second argument,
+    or just an overlays objects by passing null as the first argument.</p>
+  <pre><code class="js">L.control.layers(baseMaps, overlayMaps).addTo(map);</code></pre>
+  <p>And we’re done!</p>
+
+  <hr>
+  <footer>
+    <p>&copy; 2016, Eugene Alvin Villar</p>
+  </footer>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>

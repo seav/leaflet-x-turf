@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leaflet x Turf</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+<style type="text/css">
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+body {
+  padding-top: 50px;
+  padding-bottom: 20px;
+}
+
+.grid-cell {
+  margin-bottom: 30px;
+}
+
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Leaflet x Turf</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Home</a></li>
+        <li><a href="locator.html">Locator</a></li>
+        <li><a href="population.html">Population</a></li>
+        <li><a href="branches.html">Branches</a></li>
+        <li><a href="router.html">Router</a></li>
+      </ul>
+    </div><!--/.navbar-collapse -->
+  </div>
+</nav>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>Leaflet x Turf</h1>
+    <p>This workshop aims to introduce <a href="http://leafletjs.com/">Leaflet</a>,
+      a lightweight open-source JavaScript library for mobile-friendly interactive maps,
+      and <a href="http://turfjs.com/">Turf</a>, a JavaScript library for client-side
+      geospatial analysis.</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 col-sm-6 grid-cell">
+      <div class="thumbnail"><a href="locator.html"><img src="images/locator.png" alt=""></a></div>
+      <h2>Locator</h2>
+      <p class="lead">A locator map for the UP Department of Geodetic Engineering.</p>
+      <p>This training module teaches the basics of Leaflet, and introduces adding markers,
+        polygons, and popups, as well as multiple tile layers and layer controls.</p>
+      <p><a class="btn btn-default" href="locator.html" role="button">Learn more &raquo;</a></p>
+    </div>
+    <div class="col-md-3 col-sm-6 grid-cell">
+      <div class="thumbnail"><a href="population.html"><img src="images/population.png" alt=""></a></div>
+      <h2>Population</h2>
+      <p class="lead">An interactive choropleth map for the population of Metro Manila LGUs.</p>
+      <p>This training module introduces Leaflet's GeoJSON features, custom event handling,
+        as well as creating custom control overlays.</p>
+      <p><a class="btn btn-default" href="population.html" role="button">Learn more &raquo;</a></p>
+    </div>
+    <div class="clearfix visible-sm-block"></div>
+    <div class="col-md-3 col-sm-6 grid-cell">
+      <div class="thumbnail"><a href="branches.html"><img src="images/population.png" alt=""></a></div>
+      <h2>Branches</h2>
+      <p class="lead">A map displaying the Metro Manila branches of Jollibee in OpenStreetMap.</p>
+      <p>This training module explains how to use the Leaflet MarkerCluster plugin
+        as well as composing more complex popups.</p>
+      <p><a class="btn btn-default" href="branches.html" role="button">Learn more &raquo;</a></p>
+    </div>
+    <div class="col-md-3 col-sm-6 grid-cell">
+      <div class="thumbnail"><a href="router.html"><img src="images/population.png" alt=""></a></div>
+      <h2>Router</h2>
+      <p class="lead">A map showing routes to UP Diliman and Jollibee branches along the way.</p>
+      <p>This training module explores using a third-party routing service
+        as well as introducing Turf for geospatial analysis on the browser.</p>
+      <p><a class="btn btn-default" href="router.html" role="button">Learn more &raquo;</a></p>
+    </div>
+  </div>
+  <hr>
+  <footer>
+    <p>&copy; 2016, Eugene Alvin Villar</p>
+  </footer>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+</body>
+</html>
