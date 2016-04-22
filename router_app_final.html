@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Router to Melchor Hall</title>
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v2.0.2/turf.min.js'></script>
+<script src="loadjsonp.js"></script>
+<style type="text/css">
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#map {
+  height: 100%;
+  font-family: Arial, Helvetica, Verdana;
+}
+
+.info {
+  padding: 6px 8px;
+  font-size: 20px;
+  line-height: 16px;
+  background: white;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  border-radius: 5px;
+}
+
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script src="data/metro_manila.js"></script>
+<script src="data/jollibee.js"></script>
+<script>
+
+var map = L.map('map').setView([14.57, 121.03], 11);;
+
+L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+    maxZoom: 19
+}).addTo(map);
+
+var linestring;
+var route;
+var branches;
+
+function processMapClick(e) {
+    var point = turf.point([e.latlng.lng, e.latlng.lat]);
+    for (var i = 0; i < metroManilaData.features.length; i++) {
+        var lgu = metroManilaData.features[i];
+        if (turf.inside(point, lgu)) {
+            var apiUrl = 'http://router.project-osrm.org/viaroute?loc=' +
+                e.latlng.lat + ',' + e.latlng.lng +
+                '&loc=14.65651,121.07011&compression=false&alt=false';
+            loadJSONP(apiUrl, function(data) {
+                var vias = data.route_geometry;
+                var newVias = []
+                for (var j = 0; j < vias.length; j++) {
+                    newVias[j] = [vias[j][1], vias[j][0]];
+                }
+                linestring = turf.linestring(newVias);
+                if (route) map.removeLayer(route);
+                route = L.polyline(vias, {
+                    color: '#C00',
+                    opacity: 0.8,
+                    weight: 8
+                }).addTo(map);
+                map.fitBounds(route.getBounds(), {
+                    reset: true
+                });
+
+                if (branches) map.removeLayer(branches);
+                var buffer = turf.buffer(linestring, 500, 'meters');
+                //L.geoJson(buffer).addTo(map);
+                var within = turf.within(jollibeeData, buffer);
+                console.log(within);
+                branches = L.geoJson(within).addTo(map);
+
+                info.update(lgu.name, within.features.length);
+            }, 'jsonp');
+            break;
+        }
+    }
+}
+map.on('click', processMapClick);
+
+var info = L.control();
+
+info.onAdd = function (map) {
+    this._div = L.DomUtil.create('div', 'info');
+    this.update(null, 0);
+    return this._div;
+};
+
+info.update = function(lgu, number) {
+    this._div.innerHTML =
+        '<div>' + (lgu
+        ? 'Route from ' + lgu
+        : 'Routing to Melchor Hall') + '</div>' +
+        (lgu ? (
+        '<small>There ' + (
+            number == 1 ? 'is 1' :
+            number == 0 ? 'are no' :
+                          ('are ' + number)
+        ) + ' Jollibee branches along the way</small>') : '');
+};
+
+info.addTo(map);
+
+</script>
+</body>
+</html>
