@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Jollibee » Metro Manila Branches</title>
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+<link rel="stylesheet" href="MarkerCluster.css" />
+<link rel="stylesheet" href="MarkerCluster.Default.css" />
+<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+<script src="leaflet.markercluster.js"></script>
+<style type="text/css">
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#map {
+  height: 100%;
+  font-family: Arial, Helvetica, Verdana;
+}
+
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script src="data/jollibee.js"></script>
+<script>
+
+var map = L.map('map').setView([14.57, 121.03], 11);;
+
+L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+    maxZoom: 19
+}).addTo(map);
+
+var cluster = new L.markerClusterGroup();
+
+var geojson = L.geoJson(jollibeeData, {
+    pointToLayer: function (feature, latlng) {
+        var marker = L.marker([latlng.lat, latlng.lng]);
+
+        var content = '<table>';
+        var keys = Object.keys(feature.properties);
+        for (var i = 0; i < keys.length; i++) {
+            content += '<tr><td>' + keys[i] + '</td>' +
+                       '<td>' + feature.properties[keys[i]] + '</td></tr>';
+        }
+        content += '</table>';
+
+        marker.bindPopup(content);
+        cluster.addLayer(marker);
+        return marker;
+    }
+});
+
+map.addLayer(cluster);
+
+</script>
+</body>
+</html>

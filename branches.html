@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Branches | Leaflet x Turf</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css">
+<style type="text/css">
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+body {
+  padding-top: 50px;
+  padding-bottom: 20px;
+}
+
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Leaflet x Turf</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="locator.html">Locator</a></li>
+        <li><a href="population.html">Population</a></li>
+        <li class="active"><a href="#">Branches</a></li>
+        <li><a href="router.html">Router</a></li>
+      </ul>
+    </div><!--/.navbar-collapse -->
+  </div>
+</nav>
+
+<div class="jumbotron">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-7 col-sm-6">
+        <h1>Branches</h1>
+        <p><strong>A map displaying the Metro Manila branches of Jollibee in OpenStreetMap.</strong><br>
+          This training module explains how to use the Leaflet MarkerCluster plugin
+          as well as composing more complex popups.</p>
+        <p><a class="btn btn-primary" href="branches_app_final.html" role="button">See final product »</a></p>
+      </div>
+      <div class="col-md-5 col-sm-6">
+        <div class="thumbnail"><a href="branches_app_final.html"><img src="images/branches.png" alt=""></a></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container">
+
+  <h2>Template</h2>
+  <p>Let’s start with our base HTML5 template with Leaflet already linked
+    and our map already initialized with the Standard OpenStreetMap tile layer.</p>
+  <pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Branches&lt;/title&gt;
+    &lt;link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" /&gt;
+    &lt;script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"&gt;&lt;/script&gt;
+    &lt;style type="text/css"&gt;
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#map {
+  height: 100%;
+  font-family: Arial, Helvetica, Verdana;
+}
+
+    &lt;/style&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id="map"&gt;&lt;/div&gt;
+    &lt;script&gt;
+
+var map = L.map('map').setView([14.57, 121.03], 11);
+
+L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&amp;copy; &lt;a href="http://www.openstreetmap.org/copyright"&gt;OpenStreetMap contributors&lt;/a&gt;',
+    maxZoom: 19
+}).addTo(map);
+
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+  <h2>GeoJSON data format</h2>
+  <p>Our data consists of a GeoJSON file (<a href="data/jollibee.js">jollibee.js</a>)
+    containing the point data of known Jollibee branches in OpenStreetMap together with their
+    OSM tags as GeoJSON feature properties.</p>
+  <p>The data was obtained from OpenStreetMap and is licensed under the
+    <a href="http://opendatacommons.org/licenses/odbl/">Open Database License</a>.</p>
+  <p>To use the data, download the GeoJSON file, place it in the same directory as your HTML file,
+    and then add the following code right before the final <code>script</code> element in the HTML file.
+    The GeoJSON object will then be available via the <code>jollibeeData</code> variable.</p>
+  <pre><code class="html">&lt;script src="jollibee.js"&gt;&lt;/script&gt;</code></pre>
+
+  <h2>Loading the GeoJSON file</h2>
+  <p>Let’s check our data! Similar to the Population module, it’s very easy to load the data onto the map:</p>
+  <pre><code class="js">L.geoJson(jollibeeData).addTo(map);</code></pre>
+  <p>As you can see, it’s a bit of a mess with lots of overlapping markers.
+    It would be good if we can group these markers when the map is zoomed out
+    and then just show individual markers at a high zoom level.
+    This function is called clustering.</p>
+
+  <h2>Using the MarkerCluster Leaflet plugin</h2>
+  <p>Leaflet has plenty of plugins that you can use to extend the functionality of Leaflet.
+    You can browse the official ones <a href="http://leafletjs.com/plugins.html">at Leaflet’s website</a>.
+    For this exercise, we will be using the MarkerCluster plugin.</p>
+  <p>To use this plugin, download the following three files into the same directory as your HTML file:</p>
+  <ul>
+    <li><a href="leaflet.markercluster.js">leaflet.markercluster.js</a></li>
+    <li><a href="MarkerCluster.css">MarkerCluster.css</a></li>
+    <li><a href="MarkerCluster.Default.css">MarkerCluster.Default.css</a></li>
+  </ul>
+  <p>Then in your HTML file, update the <code>head</code> element so that the three files are loaded:</p>
+  <pre><code class="html">  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Branches&lt;/title&gt;
+    &lt;link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" /&gt;
+    &lt;link rel="stylesheet" href="MarkerCluster.css" /&gt;
+    &lt;link rel="stylesheet" href="MarkerCluster.Default.css" /&gt;
+    &lt;script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"&gt;&lt;/script&gt;
+    &lt;script src="leaflet.markercluster.js"&gt;&lt;/script&gt;
+    ...</code></pre>
+  <p>For this plugin, the idea is to create a cluster object,
+    and instead of adding markers directly to the map, you add the markers to this cluster object.
+    Finally, you add the cluster object itself to the map.
+    The cluster object will then take care of the the magical clustering functionality!</p>
+  <p>So let’s implement this step by step. First, let’s create the cluster object.
+    Add the code below just after the code that loads the base tile layer.</p>
+  <pre><code class="js">var cluster = new L.markerClusterGroup();</code></pre>
+  <p>Second, we modify the GeoJSON parsing code to instead manually create markers
+    and then add these markers to the cluster object.</p>
+  <pre><code class="js">var geojson = L.geoJson(jollibeeData, {
+    pointToLayer: function (feature, latlng) {
+        var marker = L.marker([latlng.lat, latlng.lng]);
+        cluster.addLayer(marker);
+        return marker;
+    }
+});
+</code></pre>
+  <p>Basically, we added a <code>pointToLayer</code> option for the <code>L.geoJson()</code> map call.
+    What this does is that it lets you customize the marker that Leaflet would create for point
+    objects in your GeoJSON data. You supply a custom function that creates the marker or another
+    object that can be placed on the map and then return it.
+    But for this exercise, we wont’t let Leaflet add this marker (we removed the <code>addTo()</code> method call)
+    and instead add the marker to the cluster object.
+    That is the purpose of the <code>cluster.addLayer(marker)</code> line.</p>
+  <p>Finally, we add the cluster object to the map:</p>
+  <pre><code class="js">map.addLayer(cluster);</code></pre>
+
+  <h2>Adding a more complex popup</h2>
+  <p>The GeoJSON data contains all the OpenStreetMap tags that is present for the Jollibee branches.
+    Let’s try displaying these tags when a branch marker is clicked.
+    And in order to make the display more organized, we will create an HTML tables for each Jollibee marker.
+    The modified <code>pointToLayer</code> function is shown below:</p>
+  <pre><code class="js">var geojson = L.geoJson(jollibeeData, {
+    pointToLayer: function (feature, latlng) {
+        var marker = L.marker([latlng.lat, latlng.lng]);
+
+        var content = '&lt;table&gt;';
+        var keys = Object.keys(feature.properties);
+        for (var i = 0; i < keys.length; i++) {
+            content += '&lt;tr&gt;&lt;td&gt;' + keys[i] + '&lt;/td&gt;' +
+                       '&lt;td&gt;' + feature.properties[keys[i]] + '&lt;/td&gt;&lt;/tr&gt;';
+        }
+        content += '&lt;/table&gt;';
+
+        marker.bindPopup(content);
+        cluster.addLayer(marker);
+        return marker;
+    }
+});</code></pre>
+  <p>And we are finished!</p>
+
+  <hr>
+  <footer>
+    <p>&copy; 2016, Eugene Alvin Villar</p>
+  </footer>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>

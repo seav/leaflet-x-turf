@@ -1,4 +1,6 @@
-jollibeeData = {
+// Copyright OpenStreetMap contributors. Licensed under ODbL 1.0
+// http://www.openstreetmap.org/copyright
+var jollibeeData = {
   "type": "FeatureCollection",
   "generator": "overpass-turbo",
   "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
