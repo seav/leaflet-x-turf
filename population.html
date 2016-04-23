@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Population | Leaflet x Turf</title>
+<title>Population | Leaflet×Turf</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css">
@@ -29,7 +29,7 @@ body {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">Leaflet x Turf</a>
+      <a class="navbar-brand" href="index.html">Leaflet×Turf</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -64,14 +64,14 @@ body {
   <h2>Template</h2>
   <p>Let’s start with our base HTML5 template with Leaflet already linked
     and our map <code>div</code> element already included and styled:</p>
-  <pre><code class="html">&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-  &lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;title&gt;Population&lt;/title&gt;
-    &lt;link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" /&gt;
-    &lt;script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"&gt;&lt;/script&gt;
-    &lt;style type="text/css"&gt;
+  <pre><code class="html">&lt;!DOCTYPE html>
+&lt;html>
+  &lt;head>
+    &lt;meta charset="UTF-8">
+    &lt;title>Population&lt;/title>
+    &lt;link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+    &lt;script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js">&lt;/script>
+    &lt;style type="text/css">
 
 html, body {
   margin: 0;
@@ -84,14 +84,14 @@ html, body {
   font-family: Arial, Helvetica, Verdana;
 }
 
-    &lt;/style&gt;
-  &lt;/head&gt;
-  &lt;body&gt;
-    &lt;div id="map"&gt;&lt;/div&gt;
-    &lt;script&gt;
-    &lt;/script&gt;
-  &lt;/body&gt;
-&lt;/html&gt;</code></pre>
+    &lt;/style>
+  &lt;/head>
+  &lt;body>
+    &lt;div id="map">&lt;/div>
+    &lt;script>
+    &lt;/script>
+  &lt;/body>
+&lt;/html></code></pre>
 
   <h2>GeoJSON data format</h2>
   <p>Our data consists of a GeoJSON file (<a href="data/metro_manila.js">metro_manila.js</a>)
@@ -112,7 +112,7 @@ html, body {
   <p>To use the data, download the GeoJSON file, place it in the same directory as your HTML file,
     and then add the following code right before the final <code>script</code> element in the HTML file.
     The GeoJSON object will then be available via the <code>metroManilaData</code> variable.</p>
-  <pre><code class="html">&lt;script src="metro_manila.js"&gt;&lt;/script&gt;</code></pre>
+  <pre><code class="html">&lt;script src="metro_manila.js">&lt;/script></code></pre>
 
   <h2>Basic GeoJSON map</h2>
   <p>It’s quite easy to use GeoJSON data in Leaflet. Once a map has been initialized,
@@ -122,7 +122,7 @@ html, body {
   <pre><code class="js">var map = L.map('map').setView([14.57, 121.03], 11);
 
 L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&amp;copy; &lt;a href="http://www.openstreetmap.org/copyright"&gt;OpenStreetMap contributors&lt;/a&gt;',
+    attribution: '&amp;copy; &lt;a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors&lt;/a>',
     maxZoom: 19
 }).addTo(map);
 
@@ -136,13 +136,13 @@ L.geoJson(metroManilaData).addTo(map);</code></pre>
 var grades = [0,100000,165000,270000,445000,735000,1215000,2000000];
 
 function getColorFromPopulation(p) {
-    return p &gt; grades[7] ? '#800026' :
-           p &gt; grades[6] ? '#BD0026' :
-           p &gt; grades[5] ? '#E31A1C' :
-           p &gt; grades[4] ? '#FC4E2A' :
-           p &gt; grades[3] ? '#FD8D3C' :
-           p &gt; grades[2] ? '#FEB24C' :
-           p &gt; grades[1] ? '#FED976' :
+    return p > grades[7] ? '#800026' :
+           p > grades[6] ? '#BD0026' :
+           p > grades[5] ? '#E31A1C' :
+           p > grades[4] ? '#FC4E2A' :
+           p > grades[3] ? '#FD8D3C' :
+           p > grades[2] ? '#FEB24C' :
+           p > grades[1] ? '#FED976' :
                            '#FFEDA0';
 }</code></pre>
   <p>Next we define a styling function for our GeoJSON layer so that its <code>fillColor</code>
@@ -220,11 +220,11 @@ info.onAdd = function (map) {
 };
 
 info.update = function (props) {
-    this._div.innerHTML = '&lt;h4&gt;Metro Manila Population (2010)&lt;/h4&gt;' +
+    this._div.innerHTML = '&lt;h4>Metro Manila Population (2010)&lt;/h4>' +
     (
         props
-        ? '&lt;b&gt;' + props.name + '&lt;/b&gt; – ' + props.population
-        : '&lt;i&gt;Hover over a city or municipality&lt;/i&gt;'
+        ? '&lt;b>' + props.name + '&lt;/b> – ' + props.population
+        : '&lt;i>Hover over a city or municipality&lt;/i>'
     );
 };
 
@@ -265,8 +265,8 @@ legend.onAdd = function (map) {
         labels = [];
     for (var i = 0; i < grades.length; i++) {
         div.innerHTML +=
-            '&lt;div&gt;&lt;i style="background:' + getColorFromPopulation(grades[i] + 1) + '"&gt;&lt;/i&gt; ' +
-            grades[i] + (grades[i + 1] ? '–' + grades[i + 1] : '+') + '&lt;/div&gt;';
+            '&lt;div>&lt;i style="background:' + getColorFromPopulation(grades[i] + 1) + '">&lt;/i> ' +
+            grades[i] + (grades[i + 1] ? '–' + grades[i + 1] : '+') + '&lt;/div>';
     }
     return div;
 };

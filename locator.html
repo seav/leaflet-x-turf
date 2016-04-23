@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Locator | Leaflet x Turf</title>
+<title>Locator | Leaflet×Turf</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css">
@@ -29,7 +29,7 @@ body {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">Leaflet x Turf</a>
+      <a class="navbar-brand" href="index.html">Leaflet×Turf</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -63,32 +63,32 @@ body {
 
   <h2>Template and preparation</h2>
   <p>Let’s start with our base HTML5 template:</p>
-  <pre><code class="html">&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-  &lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;title&gt;Locator&lt;/title&gt;
-  &lt;/head&gt;
-  &lt;body&gt;
-  &lt;/body&gt;
-&lt;/html&gt;</code></pre>
+  <pre><code class="html">&lt;!DOCTYPE html>
+&lt;html>
+  &lt;head>
+    &lt;meta charset="UTF-8">
+    &lt;title>Locator&lt;/title>
+  &lt;/head>
+  &lt;body>
+  &lt;/body>
+&lt;/html></code></pre>
   <p>Before writing any code for the map, you need to do the following preparation steps on your page:</p>
   <ul>
     <li>
       <p>Include Leaflet CSS file in the head section of your document:</p>
-      <pre><code class="html">&lt;link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" /&gt;</code></pre>
+      <pre><code class="html">&lt;link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" /></code></pre>
     </li>
     <li>
       <p>Include Leaflet JavaScript file:</p>
-      <pre><code class="html">&lt;script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"&gt;&lt;/script&gt;</code></pre>
+      <pre><code class="html">&lt;script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js">&lt;/script></code></pre>
     </li>
     <li>
       <p>Put a <code>div</code> element with a certain <code>id</code> where you want your map to be:</p>
-      <pre><code class="html">&lt;div id="map"&gt;&lt;/div&gt;</code></pre>
+      <pre><code class="html">&lt;div id="map">&lt;/div></code></pre>
     </li>
     <li>
       <p>Style that <code>div</code> element using CSS as desired:</p>
-      <pre><code class="html">&lt;style type="text/css"&gt;
+      <pre><code class="html">&lt;style type="text/css">
 
 html, body {
   margin: 0;
@@ -100,7 +100,7 @@ html, body {
   height: 100%;
 }
 
-&lt;/style&gt;
+&lt;/style>
 </code></pre>
     </li>
   </ul>
@@ -119,7 +119,7 @@ html, body {
     Creating a tile layer usually involves setting the URL template for the tile images,
     the attribution text and the maximum zoom level of the layer.</p>
   <pre><code class="js">L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&amp;copy; &lt;a href="http://www.openstreetmap.org/copyright"&gt;OpenStreetMap contributors&lt;/a&gt;',
+    attribution: '&amp;copy; &lt;a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors&lt;/a>',
     maxZoom: 19
 }).addTo(map);</code></pre>
   <p>Make sure all the code is called after the <code>div</code> and <code>leaflet.js</code> inclusion.
@@ -172,12 +172,12 @@ map.fitBounds(polygon);
     and provides a layers control element to allow users to easily switch different layers on your map.</p>
   <p>Let’s add another base tile layer, this time the Humanitarian tileset:</p>
   <pre><code class="js">var baseMap2 = L.tileLayer('http://tile-{s}.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-    attribution: '&amp;copy; &lt;a href="http://www.openstreetmap.org/copyright"&gt;OpenStreetMap contributors&lt;/a&gt;',
+    attribution: '&amp;copy; &lt;a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors&lt;/a>',
     maxZoom: 19
 });</code></pre>
   <p>Notice that we created a variable to store the tile layer. Let’s do that too to our Standard layer.</p>
   <pre><code class="js">var baseMap1 = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&amp;copy; &lt;a href="http://www.openstreetmap.org/copyright"&gt;OpenStreetMap contributors&lt;/a&gt;',
+    attribution: '&amp;copy; &lt;a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors&lt;/a>',
     maxZoom: 19
 }).addTo(map);</code></pre>
   <p>Notice that one layer has <code>addTo()</code> while the other one doesn’t.
